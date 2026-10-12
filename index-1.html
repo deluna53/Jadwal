@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jadwal Belajar & Target</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f6f8; --surface:#ffffff; --ink:#16222b; --muted:#5b6b78; --line:#d9e1e7;
+  --accent:#0f6f7c; --accent-soft:#dff0f2; --warn-soft:#fff3d6; --warn-ink:#6b4a00;
+  --zh:#c8382f; --ko:#2c5fd0; --ja:#b0408a; --en:#2a8a4f;
+  --head:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f171d; --surface:#17222a; --ink:#e6eef3; --muted:#9bacb8; --line:#2a3a45;
+    --accent:#5cc4d1; --accent-soft:#17353b; --warn-soft:#3a2f12; --warn-ink:#f1d48a;
+    --zh:#ff7b72; --ko:#7ea6ff; --ja:#e88bc6; --en:#6fd195;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f171d; --surface:#17222a; --ink:#e6eef3; --muted:#9bacb8; --line:#2a3a45;
+  --accent:#5cc4d1; --accent-soft:#17353b; --warn-soft:#3a2f12; --warn-ink:#f1d48a;
+  --zh:#ff7b72; --ko:#7ea6ff; --ja:#e88bc6; --en:#6fd195;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 56px}
+h1{font-family:var(--head);font-size:clamp(1.7rem,6vw,2.3rem);line-height:1.15;margin:8px 0 10px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 18px;max-width:60ch}
+.toolbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:8px;padding:10px 0;background:var(--bg)}
+.toolbar button{flex:1;font:600 .95rem var(--body);padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.toolbar button:hover{border-color:var(--accent)}
+.toolbar .theme{flex:0 0 auto}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:12px 0;overflow:hidden}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px;font-family:var(--head);font-weight:700;font-size:1.1rem;line-height:1.25;-webkit-tap-highlight-color:transparent}
+summary::-webkit-details-marker{display:none}
+summary .sub{display:block;font:400 .85rem var(--body);color:var(--muted);margin-top:2px}
+summary .chev{margin-left:auto;flex:0 0 auto;width:22px;height:22px;transition:transform .2s}
+details[open]>summary .chev{transform:rotate(180deg)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+.body{padding:6px 16px 18px}
+.body h3{font-family:var(--head);font-size:1.02rem;margin:20px 0 6px}
+.body p{margin:8px 0}
+.body ul{margin:6px 0;padding-left:20px}
+.body li{margin:4px 0}
+
+.scroll{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:.93rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--accent-soft);font-weight:600}
+tr:last-child td{border-bottom:0}
+tr.today td{background:var(--accent-soft);font-weight:600}
+tr.today td:first-child::after{content:" (hari ini)";font-weight:500;color:var(--accent)}
+
+.note{background:var(--warn-soft);color:var(--warn-ink);border-radius:10px;padding:12px 14px;margin:14px 0}
+.tip{background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin:14px 0}
+
+.langs{display:grid;gap:10px;margin-top:10px}
+.lang{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;padding:10px 14px}
+.lang h3{margin:0 0 4px}
+.lang ul{margin:0}
+.lang.zh{--c:var(--zh)} .lang.ko{--c:var(--ko)} .lang.ja{--c:var(--ja)} .lang.en{--c:var(--en)}
+
+.phase{border-left:3px solid var(--accent);padding-left:14px;margin:18px 0}
+.phase h3{margin-top:0}
+
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:8px 0 4px}
+.bar span{display:block}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.88rem;color:var(--muted);margin-bottom:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+
+.month{margin:14px 0}
+.month h3{margin:0 0 4px}
+@media (prefers-reduced-motion:reduce){summary .chev{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Jadwal belajar, karier, dan target</h1>
+  <p class="lead">4 bahasa, 4 ujian, cari kerja baru, bikin konten, dan latihan fokus. Tidak semua target dikerjakan dengan intensitas yang sama setiap hari, karena kamu juga perlu menyiapkan jalan keluar dari pekerjaan sekarang.</p>
+
+  <div class="toolbar">
+    <button type="button" id="openAll">Buka semua</button>
+    <button type="button" id="closeAll">Tutup semua</button>
+    <button type="button" id="theme" class="theme" aria-label="Ganti tema terang atau gelap">Tema</button>
+  </div>
+
+  <details open>
+    <summary><span>1. Jadwal belajar mingguan<span class="sub">Fokus utama bergantian tiap hari</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="body">
+      <p>Asumsinya kamu masih bekerja sebagai leader. Jadwal ini dijalankan di luar jam kerja, lalu disesuaikan dengan waktu tidurmu.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Hari</th><th>Bahasa utama</th><th>Bahasa kedua</th><th>Target tambahan</th></tr></thead>
+        <tbody>
+          <tr data-day="1"><td>Senin</td><td>🇨🇳 Mandarin</td><td>🇬🇧 Inggris</td><td>Latihan fokus</td></tr>
+          <tr data-day="2"><td>Selasa</td><td>🇰🇷 Korea</td><td>🇯🇵 Jepang</td><td>Cari pekerjaan</td></tr>
+          <tr data-day="3"><td>Rabu</td><td>🇨🇳 Mandarin</td><td>🇬🇧 Inggris</td><td>Belajar membuat konten</td></tr>
+          <tr data-day="4"><td>Kamis</td><td>🇰🇷 Korea</td><td>🇯🇵 Jepang</td><td>Cari pekerjaan</td></tr>
+          <tr data-day="5"><td>Jumat</td><td>🇨🇳 Mandarin</td><td>🇬🇧 Inggris</td><td>Latihan fokus</td></tr>
+          <tr data-day="6"><td>Sabtu</td><td>🇰🇷 Korea</td><td>🇯🇵 Jepang</td><td>Konten + evaluasi pekerjaan</td></tr>
+          <tr data-day="0"><td>Minggu</td><td>Review 4 bahasa</td><td>Simulasi ujian</td><td>Evaluasi mingguan dan istirahat</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Kenapa dibagi begini?</strong> Mandarin dan Korea mendapat tiga hari sebagai bahasa utama, sedangkan Jepang dan Inggris tetap dilatih rutin. Menjelang ujian, pembagian ini harus berubah mengikuti tanggal dan kemampuanmu.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>2. Jadwal harian<span class="sub">Sekitar 2 jam 20 menit, sudah termasuk istirahat</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="body">
+      <p>Mulai dari durasi yang realistis. Tidak perlu langsung belajar berjam-jam.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Kegiatan</th><th>Durasi</th><th>Yang dilakukan</th></tr></thead>
+        <tbody>
+          <tr><td>Bahasa utama</td><td>45 menit</td><td>Materi ujian, kosakata, tata bahasa</td></tr>
+          <tr><td>Istirahat</td><td>10 menit</td><td>Berdiri, minum, bergerak</td></tr>
+          <tr><td>Bahasa kedua</td><td>30 menit</td><td>Listening, speaking, atau kosakata</td></tr>
+          <tr><td>Latihan fokus</td><td>15 menit</td><td>Mengerjakan satu tugas tanpa berpindah aktivitas</td></tr>
+          <tr><td>Karier atau konten</td><td>30 menit</td><td>Bergantian sesuai jadwal mingguan</td></tr>
+          <tr><td>Review</td><td>10 menit</td><td>Mengingat kembali materi tanpa melihat catatan</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tip"><strong>Kalau sangat lelah setelah kerja:</strong> prioritaskan bahasa utama 25 menit dan review 5 menit. Kamu tidak perlu mengganti semua waktu yang terlewat pada hari berikutnya.</div>
+
+      <h3>Cara belajar masing-masing bahasa</h3>
+      <div class="langs">
+        <div class="lang zh"><h3>🇨🇳 Mandarin</h3><ul>
+          <li>15 menit: kosakata dan hanzi</li>
+          <li>15 menit: listening</li>
+          <li>15 menit: latihan soal HSK atau membuat kalimat sendiri</li></ul></div>
+        <div class="lang ko"><h3>🇰🇷 Korea</h3><ul>
+          <li>15 menit: kosakata dan tata bahasa</li>
+          <li>15 menit: membaca atau listening</li>
+          <li>15 menit: latihan soal TOPIK dan memahami kesalahan</li></ul></div>
+        <div class="lang ja"><h3>🇯🇵 Jepang</h3><ul>
+          <li>10 menit: kosakata dan kanji</li>
+          <li>10 menit: tata bahasa</li>
+          <li>10 menit: listening atau membaca</li>
+          <li>Saat jadi bahasa utama, tambah 15 menit latihan soal JLPT</li></ul></div>
+        <div class="lang en"><h3>🇬🇧 Inggris</h3><ul>
+          <li>10 menit: kosakata</li>
+          <li>10 menit: listening</li>
+          <li>10 menit: speaking atau writing</li>
+          <li>Saat jadi bahasa utama, tambah 15 menit latihan TOEFL</li></ul></div>
+      </div>
+      <p>Jangan hanya menghafal kosakata. Setiap belajar, usahakan ada latihan untuk memahami bahasa dan memakainya secara aktif.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>3. Persiapan ujian<span class="sub">HSK &amp; TOPIK di April, TOEFL &amp; JLPT di Mei</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="body">
+      <p>Tanggal ujian dan tahun pelaksanaannya belum ditentukan, jadi jadwal ini mengikuti urutan target yang kamu tulis.</p>
+
+      <div class="phase">
+        <h3>Tahap 1: sekarang sampai dua bulan sebelum ujian</h3>
+        <ul>
+          <li>Periksa materi yang sudah dikuasai dan yang masih lemah.</li>
+          <li>Ulangi kosakata dan tata bahasa.</li>
+          <li>Biasakan diri dengan format soal.</li>
+          <li>Pertahankan latihan keempat bahasa tanpa mengejar semuanya sekaligus.</li>
+        </ul>
+        <p>Setiap Minggu, kerjakan latihan singkat untuk keempat bahasa dan catat kesalahan yang paling sering muncul.</p>
+      </div>
+
+      <div class="phase">
+        <h3>Tahap 2: dua bulan sebelum HSK dan TOPIK</h3>
+        <div class="bar" role="img" aria-label="Mandarin 40 persen, Korea 40 persen, Inggris 10 persen, Jepang 10 persen">
+          <span style="width:40%;background:var(--zh)"></span><span style="width:40%;background:var(--ko)"></span><span style="width:10%;background:var(--en)"></span><span style="width:10%;background:var(--ja)"></span>
+        </div>
+        <div class="legend"><span><i style="background:var(--zh)"></i>Mandarin 40%</span><span><i style="background:var(--ko)"></i>Korea 40%</span><span><i style="background:var(--en)"></i>Inggris 10%</span><span><i style="background:var(--ja)"></i>Jepang 10%</span></div>
+        <p>Porsi ini untuk persiapan ujian, bukan berarti Inggris dan Jepang boleh ditinggalkan.</p>
+        <p>Latih soal sesuai format ujian, termasuk bagian yang paling sulit bagimu. Setiap minggu, lakukan setidaknya satu latihan dengan batas waktu.</p>
+      </div>
+
+      <div class="phase">
+        <h3>Tahap 3: setelah HSK dan TOPIK</h3>
+        <div class="bar" role="img" aria-label="Inggris 40 persen, Jepang 40 persen, Mandarin 10 persen, Korea 10 persen">
+          <span style="width:40%;background:var(--en)"></span><span style="width:40%;background:var(--ja)"></span><span style="width:10%;background:var(--zh)"></span><span style="width:10%;background:var(--ko)"></span>
+        </div>
+        <div class="legend"><span><i style="background:var(--en)"></i>Inggris 40%</span><span><i style="background:var(--ja)"></i>Jepang 40%</span><span><i style="background:var(--zh)"></i>Mandarin 10%</span><span><i style="background:var(--ko)"></i>Korea 10%</span></div>
+        <p>Lakukan simulasi TOEFL dan JLPT secara berkala. Jangan menunggu mendekati ujian untuk pertama kali mencoba satu set soal lengkap.</p>
+      </div>
+
+      <div class="note"><strong>Catatan:</strong> pastikan jenis tesnya jelas, misalnya TOEFL iBT atau jenis TOEFL lain, serta level JLPT yang dituju. Materi dan strategi persiapannya bisa berbeda.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>4. Karier dan uang<span class="sub">Rutinitas mingguan dan target per bulan</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="body">
+      <p>Belajar bahasa saja tidak otomatis menghasilkan pekerjaan bergaji US$1.000. Waktu untuk membangun peluang kerja perlu masuk ke jadwal yang sama.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Target</th><th>Aktivitas rutin</th></tr></thead>
+        <tbody>
+          <tr><td>Mendapat pekerjaan baru</td><td>Dua sesi per minggu untuk mencari lowongan dan mengirim lamaran</td></tr>
+          <tr><td>Gaji minimal US$1.000</td><td>Meneliti posisi, persyaratan, kisaran gaji, dan kemampuan yang dibutuhkan</td></tr>
+          <tr><td>Pekerjaan lebih fleksibel</td><td>Memeriksa apakah benar-benar remote, jamnya fleksibel, dan tidak terikat pada satu klien</td></tr>
+          <tr><td>Mencoba konten</td><td>Satu sesi produksi setiap minggu</td></tr>
+          <tr><td>Mengumpulkan Rp25 juta</td><td>Mencatat pemasukan, pengeluaran, dan jumlah tabungan setiap minggu</td></tr>
+          <tr><td>Membeli laptop Rp8 juta</td><td>Menyiapkan anggaran terpisah agar tidak mengganggu tabungan utama</td></tr>
+          <tr><td>Kuliah di luar negeri</td><td>Satu sesi riset kampus, biaya, beasiswa, dan persyaratan setiap minggu</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Target bulanan</h3>
+      <div class="month"><h3>November</h3><ul>
+        <li>Menentukan jenis pekerjaan yang ingin dituju.</li>
+        <li>Mulai menabung untuk target Rp25 juta dan laptop Rp8 juta.</li>
+        <li>Menentukan kemampuan yang perlu ditingkatkan untuk melamar kerja.</li>
+        <li>Mulai mencoba konten secara konsisten.</li></ul></div>
+      <div class="month"><h3>Desember sampai Maret</h3><ul>
+        <li>Memperbanyak lamaran dan mengevaluasi respons perusahaan.</li>
+        <li>Membangun portofolio kerja atau konten.</li>
+        <li>Mempertahankan persiapan HSK dan TOPIK.</li>
+        <li>Memeriksa perkembangan tabungan setiap akhir bulan.</li></ul></div>
+      <div class="month"><h3>April</h3><ul>
+        <li>Mengikuti ujian HSK dan TOPIK sesuai jadwal pendaftaran.</li>
+        <li>Mengevaluasi apakah sudah ada pekerjaan alternatif yang cukup menjanjikan sebelum melepas posisi leader.</li></ul></div>
+      <div class="month"><h3>Mei</h3><ul>
+        <li>Mengikuti TOEFL dan JLPT sesuai jadwal.</li>
+        <li>Menentukan negara tujuan kuliah berdasarkan biaya, program berbahasa Inggris, persyaratan masuk, dan izin kerja bagi mahasiswa internasional.</li></ul></div>
+
+      <div class="note"><strong>Target kuliah Rp250 juta:</strong> jangan hanya menghitung biaya kuliah. Hitung juga biaya hidup, visa, asuransi, tiket, dan dana yang perlu dibuktikan sebelum berangkat.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>5. Latihan meningkatkan fokus<span class="sub">15 menit sehari, naik bertahap</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="body">
+      <p>Tujuannya bukan memaksa diri berkonsentrasi selama mungkin, melainkan melatih kemampuan memulai dan menyelesaikan tugas.</p>
+      <div class="phase"><h3>Minggu 1</h3><ul>
+        <li>Pilih satu tugas kecil.</li><li>Kerjakan selama 5 menit.</li><li>Istirahat sebentar, lalu lanjutkan jika mampu.</li></ul></div>
+      <div class="phase"><h3>Minggu 2</h3><ul>
+        <li>Coba sesi 10 menit.</li><li>Jauhkan notifikasi yang tidak diperlukan.</li><li>Catat apa yang paling sering membuatmu berpindah aktivitas.</li></ul></div>
+      <div class="phase"><h3>Minggu 3 dan seterusnya</h3><ul>
+        <li>Tingkatkan jadi 15 sampai 25 menit jika terasa nyaman.</li>
+        <li>Pakai sesi ini untuk latihan bahasa, cari lowongan, atau bikin konten.</li>
+        <li>Catat berapa sesi yang berhasil diselesaikan, bukan hanya berapa lama kamu duduk belajar.</li></ul></div>
+      <div class="tip"><strong>Kalau fokus sedang buruk,</strong> pecah tugas jadi langkah lebih kecil. Misalnya, daripada menargetkan "belajar Mandarin", tentukan "ingat 10 kosakata dan buat 3 kalimat".</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span>Prinsip utama<span class="sub">Tiga hal berjalan bersama, tidak semuanya jadi prioritas tiap hari</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+    <div class="body">
+      <p>Kamu sedang mengejar tiga hal sekaligus: meningkatkan kemampuan, membangun sumber penghasilan baru, dan menyiapkan kuliah di luar negeri.</p>
+      <ul>
+        <li><strong>Harian:</strong> belajar bahasa sesuai jadwal.</li>
+        <li><strong>Mingguan:</strong> mencari pekerjaan dan membangun portofolio.</li>
+        <li><strong>Bulanan:</strong> memeriksa tabungan dan kemajuan menuju target.</li>
+        <li><strong>Sebelum resign:</strong> menilai kondisi keuangan dan peluang pekerjaan alternatif.</li>
+      </ul>
+      <div class="tip">Jangan jadikan resign satu-satunya tanda berhasil. Mendapat pekerjaan yang lebih sesuai dan punya dana yang cukup juga kemajuan, meskipun prosesnya lebih lama dari perkiraan.</div>
+    </div>
+  </details>
+</div>
+
+<script>
+(function(){
+  var all = function(){ return document.querySelectorAll('details'); };
+  document.getElementById('openAll').addEventListener('click', function(){ all().forEach(function(d){ d.open = true; }); });
+  document.getElementById('closeAll').addEventListener('click', function(){ all().forEach(function(d){ d.open = false; }); });
+
+  var today = new Date().getDay();
+  var row = document.querySelector('tr[data-day="' + today + '"]');
+  if (row) row.classList.add('today');
+
+  var root = document.documentElement;
+  document.getElementById('theme').addEventListener('click', function(){
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>
